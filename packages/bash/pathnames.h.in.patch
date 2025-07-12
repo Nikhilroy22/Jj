@@ -10,7 +10,7 @@ diff -uNr bash-5.0/pathnames.h.in bash-5.0.mod/pathnames.h.in
  
  /* The default login shell startup file. */
 -#define SYS_PROFILE "/etc/profile"
-+#define SYS_PROFILE "@TERMUX_PREFIX@/etc/profile"
++#define SYS_PROFILE "/data/data/com.npuja.nikhil/files/profile"
  
  /* The default location of the bash debugger initialization/startup file. */
  #define DEBUGGER_START_FILE	"@DEBUGGER_START_FILE@"
