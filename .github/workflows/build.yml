@@ -21,8 +21,16 @@ jobs:
             ghcr.io/termux/package-builder:latest \
             ./build-package.sh bash
 
-      - name: Upload package
+      - name: Rename .deb files with invalid characters
+        run: |
+          mkdir -p fixed_output
+          for f in output/*.deb; do
+            safe_name=$(basename "$f" | tr ':' '_')
+            cp "$f" "fixed_output/$safe_name"
+          done
+
+      - name: Upload sanitized .deb files
         uses: actions/upload-artifact@v4
         with:
           name: bash-deb
-          path: output/*.deb
+          path: fixed_output/
