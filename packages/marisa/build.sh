@@ -1,0 +1,13 @@
+TERMUX_PKG_HOMEPAGE=https://github.com/s-yata/marisa-trie
+TERMUX_PKG_DESCRIPTION="Matching Algorithm with Recursively Implemented StorAge"
+TERMUX_PKG_LICENSE="BSD 2-Clause, LGPL-2.1"
+TERMUX_PKG_LICENSE_FILE="COPYING.md"
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_VERSION="0.3.0"
+TERMUX_PKG_SRCURL=https://github.com/s-yata/marisa-trie/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=a3057d0c2da0a9a57f43eb8e07b73715bc5ff053467ee8349844d01da91b5efb
+TERMUX_PKG_DEPENDS="libc++"
+TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+-DBUILD_SHARED_LIBS=ON
+"

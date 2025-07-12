@@ -1,0 +1,12 @@
+TERMUX_PKG_HOMEPAGE=https://www.unicorn-engine.org/
+TERMUX_PKG_DESCRIPTION="Unicorn is a lightweight multi-platform, multi-architecture CPU emulator framework"
+TERMUX_PKG_LICENSE="GPL-2.0"
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_VERSION="2.1.3"
+TERMUX_PKG_SRCURL=https://github.com/unicorn-engine/unicorn/archive/$TERMUX_PKG_VERSION.tar.gz
+TERMUX_PKG_SHA256=5572eecd903fff0e66694310ca438531243b18782ce331a4262eeb6f6ad675bc
+TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_BREAKS="unicorn-dev"
+TERMUX_PKG_REPLACES="unicorn-dev"
+TERMUX_PKG_BUILD_IN_SRC=true
+TERMUX_PKG_EXTRA_CONFIGURE_ARGS="-DTERMUX_ARCH=$TERMUX_ARCH"

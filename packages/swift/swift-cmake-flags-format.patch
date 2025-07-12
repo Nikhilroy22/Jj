@@ -1,0 +1,82 @@
+diff --git a/swift/utils/swift_build_support/swift_build_support/products/cmark.py b/swift/utils/swift_build_support/swift_build_support/products/cmark.py
+index b11313fab87..fe2e8982300 100644
+--- a/swift/utils/swift_build_support/swift_build_support/products/cmark.py
++++ b/swift/utils/swift_build_support/swift_build_support/products/cmark.py
+@@ -12,6 +12,9 @@
+ 
+ from . import cmake_product
+ from . import earlyswiftdriver
++from ..host_specific_configuration \
++    import HostSpecificConfiguration
++import os
+ 
+ 
+ class CMark(cmake_product.CMakeProduct):
+@@ -68,6 +70,13 @@ class CMark(cmake_product.CMakeProduct):
+             toolchain_file = self.generate_linux_toolchain_file(platform, arch)
+             self.cmake_options.define('CMAKE_TOOLCHAIN_FILE:PATH', toolchain_file)
+ 
++        host_config = HostSpecificConfiguration(host_target, self.args)
++        self.cmake_options.extend(host_config.cmake_options)
++
++        if 'ANDROID_DATA' not in os.environ:
++            self.cmake_options.define('CMAKE_C_FLAGS', '%s --target=%s %s' % (os.environ.get('CFLAGS'), os.environ.get('CCTERMUX_HOST_PLATFORM'), os.environ.get('CPPFLAGS')))
++            self.cmake_options.define('CMAKE_CXX_FLAGS', '%s --target=%s %s' % (os.environ.get('CXXFLAGS'), os.environ.get('CCTERMUX_HOST_PLATFORM'), os.environ.get('CPPFLAGS')))
++
+         self.build_with_cmake(["all"], self.args.cmark_build_variant, [])
+ 
+     def should_test(self, host_target):
+diff --git a/swift/utils/swift_build_support/swift_build_support/products/llvm.py b/swift/utils/swift_build_support/swift_build_support/products/llvm.py
+index 744dca10fca..7b5932882f2 100644
+--- a/swift/utils/swift_build_support/swift_build_support/products/llvm.py
++++ b/swift/utils/swift_build_support/swift_build_support/products/llvm.py
+@@ -340,6 +340,12 @@ class LLVM(cmake_product.CMakeProduct):
+             llvm_cmake_options.define('CLANG_TABLEGEN', clang_tblgen)
+             llvm = os.path.join(host_build_dir, 'llvm')
+             llvm_cmake_options.define('LLVM_NATIVE_BUILD', llvm)
++            llvm_cmake_options.define('CMAKE_CXX_FLAGS', '{} --target={} {}'.format(os.environ['CXXFLAGS'], os.environ['CCTERMUX_HOST_PLATFORM'], os.environ['CPPFLAGS']))
++            llvm_cmake_options.define('CMAKE_EXE_LINKER_FLAGS', '{} --target={}'.format(os.environ['LDFLAGS'], os.environ['CCTERMUX_HOST_PLATFORM']))
++            llvm_cmake_options.define('CMAKE_FIND_ROOT_PATH:PATH', self.args.cross_compile_deps_path)
++            llvm_cmake_options.define('CMAKE_FIND_ROOT_PATH_MODE_PROGRAM', 'NEVER')
++            llvm_cmake_options.define('CMAKE_FIND_ROOT_PATH_MODE_LIBRARY', 'ONLY')
++
+ 
+         host_config = HostSpecificConfiguration(host_target, self.args)
+ 
+diff --git a/swift/utils/swift_build_support/swift_build_support/products/swift_testing.py b/swift/utils/swift_build_support/swift_build_support/products/swift_testing.py
+index 324d1a77eea..bd5f9c79353 100644
+--- a/swift/utils/swift_build_support/swift_build_support/products/swift_testing.py
++++ b/swift/utils/swift_build_support/swift_build_support/products/swift_testing.py
+@@ -13,6 +13,9 @@
+ import os
+ 
+ from build_swift.build_swift.versions import Version
++from ..host_specific_configuration \
++    import HostSpecificConfiguration
++from ..targets import StdlibDeploymentTarget
+ 
+ from . import cmake_product
+ from . import product
+@@ -115,6 +117,22 @@ class SwiftTestingCMakeShim(cmake_product.CMakeProduct):
+         # FIXME: If we build macros for the builder, specify the path.
+         self.cmake_options.define('SwiftTesting_MACRO', 'NO')
+ 
++        if host_target.startswith('android') and self.is_cross_compile_target(host_target):
++            host_config = HostSpecificConfiguration(host_target, self.args)
++            self.cmake_options.extend(host_config.cmake_options)
++            flags = '-target %s-unknown-linux-android%s ' % (self.args.android_arch,
++                                                             self.args.android_api_level)
++
++            flags += '-resource-dir %s/lib/swift ' % (
++                     self.host_install_destdir(host_target) + self.args.install_prefix)
++
++            ndk_path = StdlibDeploymentTarget.get_target_for_name(host_target).platform.ndk_toolchain_path(self.args)
++            flags += '-sdk %s/sysroot ' % (ndk_path)
++            flags += '-tools-directory %s/bin' % (ndk_path)
++            self.cmake_options.define('CMAKE_Swift_FLAGS', flags)
++            self.cmake_options.define('CMAKE_CXX_COMPILER_WORKS', 'True')
++            self.cmake_options.define('CMAKE_FIND_ROOT_PATH', self.args.cross_compile_deps_path)
++
+         self.generate_toolchain_file_for_darwin_or_linux(
+             host_target, override_macos_deployment_version=override_deployment_version)
+         self.build_with_cmake([], self.args.build_variant, [],
