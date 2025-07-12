@@ -1,27 +1,32 @@
-name: Build Bash Termux Package
+name: Build Bash Package
 
 on:
-  workflow_dispatch:     # ম্যানুয়ালি run করা যাবে
+  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
-  build-bash:
+  build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/termux/package-builder:latest  # official termux build image
+      image: ghcr.io/termux/package-builder:latest
+
+    env:
+      ANDROID_NDK_HOME: /opt/android-ndk
+      ANDROID_SDK_ROOT: /opt/android-sdk
+      NDK: /opt/android-ndk
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Build bash package
-      run: |
-        ./build-package.sh bash
+      - name: Build bash package
+        run: |
+          ./build-package.sh bash
 
-    - name: Upload .deb package
-      uses: actions/upload-artifact@v4
-      with:
-        name: bash-deb-package
-        path: output/*.deb
+      - name: Upload deb file
+        uses: actions/upload-artifact@v4
+        with:
+          name: bash-deb
+          path: output/*.deb
