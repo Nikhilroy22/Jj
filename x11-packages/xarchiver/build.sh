@@ -1,0 +1,11 @@
+TERMUX_PKG_HOMEPAGE=https://github.com/ib/xarchiver
+TERMUX_PKG_DESCRIPTION="GTK+ frontend to various command line archivers"
+TERMUX_PKG_LICENSE="GPL-2.0"
+TERMUX_PKG_MAINTAINER="@termux"
+TERMUX_PKG_VERSION="0.5.4.25"
+TERMUX_PKG_SRCURL=https://github.com/ib/xarchiver/archive/${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=dfd70c9081790399c32d9d716a55060e5136ff0ad1a94a84988a55fd6f771ceb
+TERMUX_PKG_AUTO_UPDATE=true
+TERMUX_PKG_UPDATE_TAG_TYPE="newest-tag"
+TERMUX_PKG_DEPENDS="gdk-pixbuf, glib, gtk3"
+TERMUX_PKG_RECOMMENDS="arj, binutils-is-llvm | binutils, bzip2, cpio, gzip, lz4, lzip, lzop, p7zip, tar, unar, unrar, unzip, xz-utils, zip, zstd"
