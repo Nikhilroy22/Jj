@@ -3,29 +3,25 @@ name: Build Bash Package
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/termux/package-builder:latest
-
-    env:
-      ANDROID_NDK_HOME: /opt/android-ndk
-      ANDROID_SDK_ROOT: /opt/android-sdk
-      NDK: /opt/android-ndk
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build bash package
+      - name: Set up Docker container with Termux builder
         run: |
-          ./build-package.sh bash
+          docker run --rm \
+            -v ${{ github.workspace }}:/termux-packages \
+            -w /termux-packages \
+            ghcr.io/termux/package-builder:latest \
+            ./build-package.sh bash
 
-      - name: Upload deb file
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: bash-deb
