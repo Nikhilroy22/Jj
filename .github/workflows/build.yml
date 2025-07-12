@@ -1,4 +1,4 @@
-name: Build Bash Package
+name: Build Bash Package (ARMv7)
 
 on:
   workflow_dispatch:
@@ -13,11 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker container with Termux builder
+      - name: Build bash for ARMv7 (32-bit)
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/Jj \
             -w /Jj \
+            -e TERMUX_ARCH=arm \
             ghcr.io/termux/package-builder:latest \
             ./build-package.sh bash
 
@@ -32,5 +33,5 @@ jobs:
       - name: Upload sanitized .deb files
         uses: actions/upload-artifact@v4
         with:
-          name: bash-deb
+          name: bash-deb-armv7
           path: fixed_output/
