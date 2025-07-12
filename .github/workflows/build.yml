@@ -16,8 +16,8 @@ jobs:
       - name: Set up Docker container with Termux builder
         run: |
           docker run --rm \
-            -v ${{ github.workspace }}:/termux-packages \
-            -w /termux-packages \
+            -v ${{ github.workspace }}:/Jj \
+            -w /Jj \
             ghcr.io/termux/package-builder:latest \
             ./build-package.sh bash
 
