@@ -1,54 +1,34 @@
-name: Docker image
+name: Docker Builder
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  update:
+  build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    if: github.repository == 'nikhilroy22/jj'
+
     steps:
-    - name: Clone repository
+    - name: Clone the repo
       uses: actions/checkout@v4
-    - name: Build
-      run: |
-        cd ./scripts
-        docker build --tag nikhilroy22/jj-builder:latest .
-        docker tag jj/package-builder:latest ghcr.io/jj/package-builder:latest
-        
-        docker build --tag jj/package-builder-cgct:latest --file Dockerfile.cgct .
-        docker tag jj/package-builder-cgct:latest ghcr.io/jj/package-builder-cgct:latest
-    - name: Login to GHCR
-      if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'Nikhilroy22/Jj'
+
+    - name: Log in to GHCR
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Push
-      if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'Nikhilroy22/Jj'
+
+    - name: Build Docker image
       run: |
-        # ghcr.io seem to be unstable sometimes. It may suddenly drop connection
-        # during docker push when some layers are already uploaded. The workaround
-        # is to retry again 1 or 2 more times.
-        for registry in "ghcr.io/" ""; do
-          for image in package-builder package-builder-cgct; do
-            for t in 1 2 3; do
-              if docker push "${registry}jj/${image}:latest"; then
-                break
-              else
-                if [ "$t" = "3" ]; then
-                  echo "Giving up after 3 attempts"
-                  exit 1
-                fi
-                sleep 20
-              fi
-            done
-          done
-        done
+        cd ./scripts
+      
+        docker build -t ghcr.io/${{ github.actor }}/myapp:latest .
+
+    - name: Push Docker image to GHCR
+      run: |
+        docker push ghcr.io/${{ github.actor }}/myapp:latest
