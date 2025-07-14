@@ -19,7 +19,7 @@ jobs:
             -v ${{ github.workspace }}:/Jj \
             -w /Jj \
             -e TERMUX_ARCH=arm \
-            ghcr.io/termux/package-builder:latest \
+            ghcr.io/nikhilroy22/myapp:latest \
             ./build-package.sh bash
 
       - name: Rename .deb files with invalid characters
