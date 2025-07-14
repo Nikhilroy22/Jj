@@ -27,8 +27,8 @@ jobs:
       run: |
         cd ./scripts
       
-        docker build -t ghcr.io/${{ github.actor }}/myapp:latest .
+        docker build -t ghcr.io/nikhilroy22/myapp:latest .
 
     - name: Push Docker image to GHCR
       run: |
-        docker push ghcr.io/${{ github.actor }}/myapp:latest
+        docker push ghcr.io/nikhilroy22/myapp:latest
