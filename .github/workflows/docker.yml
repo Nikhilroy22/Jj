@@ -11,15 +11,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    if: github.repository == 'Nikhilroy22/Jj'
+    if: github.repository == 'nikhilroy22/jj'
     steps:
     - name: Clone repository
       uses: actions/checkout@v4
     - name: Build
       run: |
         cd ./scripts
-        docker build --tag Nikhilroy22/Jj-builder:latest .
+        docker build --tag nikhilroy22/jj-builder:latest .
         docker tag jj/package-builder:latest ghcr.io/jj/package-builder:latest
+        
         docker build --tag jj/package-builder-cgct:latest --file Dockerfile.cgct .
         docker tag jj/package-builder-cgct:latest ghcr.io/jj/package-builder-cgct:latest
     - name: Login to GHCR
