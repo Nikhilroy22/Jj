@@ -1,4 +1,4 @@
-name: Build Bash Package (ARMv7)
+name: openjdk-17 build
 
 on:
   workflow_dispatch:
