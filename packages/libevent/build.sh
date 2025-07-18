@@ -20,10 +20,20 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DEVENT__DISABLE_SAMPLES=ON
 -DEVENT__DISABLE_TESTS=ON
 -DEVENT__DISABLE_TESTS=ON
+-DCMAKE_POLICY_DEFAULT_CMP0054=NEW
+-DCMAKE_POLICY_VERSION=3.5
 -DEVENT__HAVE_WAITPID_WITH_WNOWAIT=ON
 -DEVENT__SIZEOF_PTHREAD_T=$((TERMUX_ARCH_BITS/8))
 "
+termux_step_pre_configure() {
+    # fix cmake version
+    sed -i 's/cmake_minimum_required(VERSION [0-9.]\+)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
 
+    # pthreads patch
+    sed -i '/find_package(Threads REQUIRED)/ {
+        s/find_package(Threads REQUIRED)/set(CMAKE_THREAD_LIBS_INIT \"\")\\nset(CMAKE_USE_PTHREADS_INIT 1)/g
+    }' CMakeLists.txt
+}
 termux_step_post_get_source() {
 	# Do not forget to bump revision of reverse dependencies and rebuild them
 	# after RELEASE / SOVERSION is changed.
