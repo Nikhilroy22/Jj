@@ -20,7 +20,7 @@ jobs:
             -w /Jj \
             -e TERMUX_ARCH=arm \
             ghcr.io/termux/package-builder:latest \
-            ./build-package.sh openjdk-21
+            ./build-package.sh openjdk-17
 
       - name: Rename .deb files with invalid characters
         run: |
