@@ -1,0 +1,37 @@
+name: Build Bash Package (ARMv7)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build bash for ARMv7 (32-bit)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/Jj \
+            -w /Jj \
+            -e TERMUX_ARCH=arm \
+            ghcr.io/termux/package-builder:latest \
+            ./build-package.sh openjdk-17
+
+      - name: Rename .deb files with invalid characters
+        run: |
+          mkdir -p fixed_output
+          for f in output/*.deb; do
+            safe_name=$(basename "$f" | tr ':' '_')
+            cp "$f" "fixed_output/$safe_name"
+          done
+
+      - name: Upload sanitized .deb files
+        uses: actions/upload-artifact@v4
+        with:
+          name: bash-deb-armv7
+          path: fixed_output/
